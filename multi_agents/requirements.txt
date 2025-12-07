@@ -1,7 +1,4 @@
-langgraph
-gpt_researcher
-langgraph-cli
-python-dotenv
 weasyprint
+python-dotenv
 json5
 loguru
