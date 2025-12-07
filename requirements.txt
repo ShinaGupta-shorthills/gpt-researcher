@@ -28,7 +28,7 @@ PyMuPDF
 playwright
 
 # Install this BEFORE LangChain pins
-gpt-researcher==0.14.5
+gpt-researcher==0.11.0
 
 # LANGCHAIN FAMILY — MUST BE LAST
 langchain==0.0.354
