@@ -5,7 +5,7 @@ md2pdf
 python-dotenv
 pyyaml
 uvicorn[standard]
-pydantic==1.10.13
+pydantic==2.7.4
 fastapi
 python-multipart
 markdown
