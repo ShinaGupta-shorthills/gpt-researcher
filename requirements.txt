@@ -33,7 +33,7 @@ langchain-core==0.1.17
 langchain-community==0.0.16
 langchain-openai==0.0.7
 langgraph==0.0.18
-langsmith==0.0.45  # Corrected version to resolve dependency conflict
+langsmith==0.0.92  # Corrected version to resolve dependency conflict
 
 # Browser support
 playwright
