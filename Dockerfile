@@ -20,8 +20,9 @@ COPY requirements.txt ./
 # Upgrade pip first
 RUN pip install --upgrade pip
 
-# 2. FIX: COMBINE Python package installation AND Playwright browser installation
-# This is the critical fix for the "No module named playwright" error.
+# 2. CRITICAL FIX: COMBINE Python package installation AND Playwright browser installation
+# This resolves the "No module named playwright" error and executes after the
+# requirements.txt fix is applied.
 RUN pip install --no-cache-dir -r requirements.txt \
     && python -m playwright install --with-deps chromium
 
