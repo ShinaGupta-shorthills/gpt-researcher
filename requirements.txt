@@ -29,6 +29,7 @@ json_repair
 json5
 loguru
 langgraph
+playwright
 
 # uncomment for testing
 # pytest
