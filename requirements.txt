@@ -1,4 +1,4 @@
-# dependencies
+# Core dependencies
 beautifulsoup4
 colorama
 md2pdf
@@ -25,9 +25,8 @@ requests
 tiktoken
 arxiv
 PyMuPDF
-playwright
 
-# GPT Researcher + LangChain Ecosystem
+# GPT Researcher + LLM
 gpt-researcher==0.11.0
 langchain==0.0.318
 langchain-core==0.1.17
@@ -35,3 +34,6 @@ langchain-community==0.0.12
 langchain-openai==0.0.5
 langgraph==0.0.18
 langsmith==0.1.21
+
+# Playwright / Browsers handled in Dockerfile
+playwright
