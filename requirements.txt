@@ -9,8 +9,8 @@ pydantic
 fastapi
 python-multipart
 markdown
-langchain
-langchain_community
+# langchain
+# langchain_community
 langchain-openai
 tiktoken
 gpt-researcher
@@ -28,7 +28,7 @@ unstructured
 json_repair
 json5
 loguru
-langgraph
+# langgraph
 playwright
 
 # uncomment for testing
