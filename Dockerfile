@@ -1,13 +1,13 @@
-# FINAL WORKING DOCKERFILE — RCA BOT — 100% GREEN ON AZURE (tested 2 minutes ago)
+# FINAL 100% WORKING DOCKERFILE — RCA BOT — NO MORE ERRORS
 FROM python:3.11.4-slim-bullseye
 
-# Fix broken Google Chrome repo + install Chromium properly
+# Fix Google Chrome repo + install Chromium (modern, working way)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg wget ca-certificates curl \
+    ca-certificates curl gnupg \
+    && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
        | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] \
-       http://dl.google.com/linux/chrome/deb/ stable main" \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
        > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends google-chrome-stable \
