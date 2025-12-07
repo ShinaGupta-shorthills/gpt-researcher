@@ -12,14 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /usr/src/app
 
-# Copy only the main requirements.txt (multi_agents/requirements.txt does NOT exist)
+# Copy requirements.txt
 COPY requirements.txt ./
 
-# Install everything from your working requirements.txt
+# Install dependencies + Playwright from your requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers — BUT AFTER installing playwright from requirements.txt
-RUN playwright install chromium
+# NOW install the browser — this works because playwright is already installed
+RUN python -m playwright install chromium
 
 # Non-root user + outputs folder
 RUN useradd -m gpt-researcher && \
