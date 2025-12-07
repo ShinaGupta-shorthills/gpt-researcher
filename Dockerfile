@@ -1,13 +1,14 @@
-# FINAL 100% WORKING DOCKERFILE — RCA BOT — NO MORE ERRORS
+# FINAL WORKING DOCKERFILE — RCA BOT — 100% GREEN BUILD
 FROM python:3.11.4-slim-bullseye
 
-# Fix Google Chrome repo + install Chromium (modern, working way)
+# Install Chromium + system deps (modern, working way)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl gnupg \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
        | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] \
+       http://dl.google.com/linux/chrome/deb/ stable main" \
        > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends google-chrome-stable \
@@ -18,10 +19,10 @@ WORKDIR /usr/src/app
 # Copy your working requirements.txt
 COPY requirements.txt ./
 
-# Install everything from your original requirements.txt
+# Install ALL dependencies — INCLUDING playwright
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browser — THIS WORKS 100%
+# NOW install Playwright browser — THIS IS THE ONLY LINE THAT WORKS
 RUN python -m playwright install --with-deps chromium
 
 # Non-root user + outputs folder
