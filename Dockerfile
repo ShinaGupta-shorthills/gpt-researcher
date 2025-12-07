@@ -1,5 +1,6 @@
 FROM python:3.11.4-slim-bullseye
 
+# 1. System dependencies and Google Chrome repository setup
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl gnupg \
     && mkdir -p /etc/apt/keyrings \
@@ -16,14 +17,15 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt ./
 
-# UPGRADE PIP FIRST — FIXES VERSION CONFLICT
+# Upgrade pip first
 RUN pip install --upgrade pip
 
-# THEN INSTALL YOUR REQUIREMENTS
-RUN pip install --no-cache-dir -r requirements.txt
+# 2. FIX: COMBINE Python package installation AND Playwright browser installation
+# This is the critical fix for the "No module named playwright" error.
+RUN pip install --no-cache-dir -r requirements.txt \
+    && python -m playwright install --with-deps chromium
 
-RUN python -m playwright install --with-deps chromium
-
+# Non-root user setup
 RUN useradd -m gpt-researcher \
     && mkdir -p /usr/src/app/outputs \
     && chown -R gpt-researcher:gpt-researcher /usr/src/app
