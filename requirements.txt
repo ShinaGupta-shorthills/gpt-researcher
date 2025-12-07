@@ -29,9 +29,9 @@ playwright
 
 # GPT Researcher + Matching LangChain Ecosystem
 gpt-researcher==0.11.0
-langchain==0.0.308
-langchain-community==0.0.16
-langchain-core==0.1.4
-langchain-openai==0.0.5
-langgraph==0.0.15
-langsmith==0.0.70
+langchain==0.0.284
+langchain-core==0.1.17
+langchain-community==0.0.24
+langchain-openai==0.0.6
+langgraph==0.0.18
+langsmith==0.0.87
