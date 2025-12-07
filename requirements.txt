@@ -27,13 +27,11 @@ arxiv
 PyMuPDF
 playwright
 
-# Install this BEFORE LangChain pins
+# GPT Researcher + Matching LangChain Ecosystem
 gpt-researcher==0.11.0
-
-# LANGCHAIN FAMILY — MUST BE LAST
-langchain==0.0.354
-langchain-community==0.0.38
-langchain-core==0.1.52
-langchain-openai==0.0.8
-langgraph==0.0.26
-langsmith==0.0.92
+langchain==0.0.308
+langchain-community==0.0.16
+langchain-core==0.1.4
+langchain-openai==0.0.5
+langgraph==0.0.15
+langsmith==0.0.70
