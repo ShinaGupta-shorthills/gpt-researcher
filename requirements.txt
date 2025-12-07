@@ -4,21 +4,12 @@ colorama
 md2pdf
 python-dotenv
 pyyaml
-uvicorn
-pydantic
+uvicorn[standard]
+pydantic==1.10.13
 fastapi
 python-multipart
 markdown
-langchain==0.0.354
-langchain-community==0.0.38
-langchain-core==0.1.52
-langchain-openai==0.0.8
-langsmith==0.0.92
-tiktoken
-gpt-researcher
-arxiv
-PyMuPDF
-requests
+markdown2
 jinja2
 aiofiles
 mistune
@@ -30,9 +21,19 @@ unstructured
 json_repair
 json5
 loguru
-langgraph==0.0.26
+requests
+tiktoken
+arxiv
+PyMuPDF
 playwright
 
-# uncomment for testing
-# pytest
-# pytest-asyncio
+# Install this BEFORE LangChain pins
+gpt-researcher==0.14.5
+
+# LANGCHAIN FAMILY — MUST BE LAST
+langchain==0.0.354
+langchain-community==0.0.38
+langchain-core==0.1.52
+langchain-openai==0.0.8
+langgraph==0.0.26
+langsmith==0.0.92
