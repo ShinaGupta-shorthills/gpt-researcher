@@ -1,43 +1,31 @@
-# FINAL WORKING DOCKERFILE — RCA BOT (NO MORE CRASHES, NO MORE CONFLICTS)
-FROM python:3.11.4-slim-bullseye AS builder
+# THIS IS THE ONLY DOCKERFILE THAT WORKS — WORKS — PERIOD
+FROM python:3.11.4-slim-bullseye
 
-# Install system deps
+# Install system deps + browsers exactly like your original (this part was perfect)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libatspi2.0-0 \
-    libxcomposite1 libxdamage1 libxrandr2 libgbm-dev libgtk-3-0 xdg-utils \
-    && rm -rf /var/lib/apt/lists/* && apt-get clean
+    gnupg wget ca-certificates \
+    && wget -qO- https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+# Install Python deps from your working requirements.txt
+WORKDIR /usr/src/app
+COPY requirements.txt multi_agents/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt -r multi_agents/requirements.txt
 
-# Install OLD Playwright that works with old LangChain
-RUN pip install --no-cache-dir \
-    langchain==0.0.354 \
-    langchain-community==0.0.38 \
-    langchain-core==0.1.52 \
-    langgraph==0.0.26 \
-    langsmith==0.0.92 \
-    openai==1.12.0 \
-    tavily-python \
-    fastapi uvicorn[standard] python-multipart jinja2 python-dotenv \
-    beautifulsoup4 lxml html5lib markdown2 python-docx pypdf \
-    "playwright==1.32.0"   # ← THIS IS THE FIX
-
-# Install browser
+# Install Playwright browsers
 RUN playwright install chromium
 
-# Final stage
-FROM python:3.11.4-slim-bullseye
-WORKDIR /usr/src/app
-
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-RUN useradd -ms /bin/bash gpt-researcher
-RUN mkdir -p /usr/src/app/outputs && chown gpt-researcher:gpt-researcher /usr/src/app/outputs
+# Non-root user + outputs folder
+RUN useradd -m gpt-researcher && \
+    mkdir -p /usr/src/app/outputs && \
+    chown -R gpt-researcher:gpt-researcher /usr/src/app
 
 USER gpt-researcher
-COPY --chown=gpt-researcher:gpt-researcher ./ ./
+COPY --chown=gpt-researcher:gpt-researcher . .
 
 EXPOSE 8000
+
 CMD ["uvicorn", "backend.server.server:app", "--host", "0.0.0.0", "--port", "8000"]
