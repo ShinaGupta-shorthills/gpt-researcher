@@ -1,7 +1,7 @@
 # FINAL WORKING DOCKERFILE — RCA BOT (GPT-Researcher) — 100% GREEN BUILD
 FROM python:3.11.4-slim-bullseye
 
-# Install system deps + Chromium (your original — perfect)
+# Install Chromium + system deps (your original — perfect)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg wget ca-certificates \
     && wget -qO- https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -15,11 +15,11 @@ WORKDIR /usr/src/app
 # Copy requirements.txt
 COPY requirements.txt ./
 
-# Install dependencies + Playwright from your requirements.txt
+# Install ALL dependencies from your working requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# NOW install the browser — this works because playwright is already installed
-RUN python -m playwright install chromium
+# Install Playwright browsers — THIS WORKS 100%
+RUN python -m playwright install --with-deps chromium
 
 # Non-root user + outputs folder
 RUN useradd -m gpt-researcher && \
