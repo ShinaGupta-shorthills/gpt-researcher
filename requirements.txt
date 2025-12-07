@@ -27,11 +27,11 @@ arxiv
 PyMuPDF
 playwright
 
-# GPT Researcher + Matching LangChain Ecosystem
+# EXACT WORKING GPT RESEARCHER + LANGCHAIN ECOSYSTEM
 gpt-researcher==0.11.0
-langchain==0.0.284
-langchain-core==0.1.17
-langchain-community==0.0.24
-langchain-openai==0.0.6
-langgraph==0.0.18
-langsmith==0.0.87
+langchain==0.0.329
+langchain-core==0.1.27
+langchain-community==0.0.26
+langchain-openai==0.0.7
+langgraph==0.0.20
+langsmith==0.0.88
