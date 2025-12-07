@@ -1,8 +1,7 @@
 FROM python:3.11.4-slim-bullseye
 
-# 1. System dependencies and Google Chrome repository setup
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl gnupg \
+    ca-certificates curl gnupg wget \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
        | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
@@ -16,24 +15,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
-
-# Upgrade pip first
 RUN pip install --upgrade pip
 
-# 2. CRITICAL FIX: COMBINE Python package installation AND Playwright browser installation
-# This resolves the "No module named playwright" error and executes after the
-# requirements.txt fix is applied.
+# Install everything in one RUN — best for cache and disk usage
 RUN pip install --no-cache-dir -r requirements.txt \
     && python -m playwright install --with-deps chromium
 
-# Non-root user setup
 RUN useradd -m gpt-researcher \
     && mkdir -p /usr/src/app/outputs \
-    && chown -R gpt-researcher:gpt-researcher /usr/src/app
+    && chown -R gpt-researcher:gpt-researcher /usr/src/app \
+    && chmod 777 /usr/src/app/outputs
 
 USER gpt-researcher
 COPY --chown=gpt-researcher:gpt-researcher . .
 
 EXPOSE 8000
+
+# Optional but recommended
+HEALTHCHECK CMD curl -f http://localhost:8000/health || exit 1
 
 CMD ["uvicorn", "backend.server.server:app", "--host", "0.0.0.0", "--port", "8000"]
