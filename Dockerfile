@@ -1,6 +1,5 @@
 FROM python:3.11.4-slim-bullseye
 
-# Install Chromium + deps (modern way)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl gnupg \
     && mkdir -p /etc/apt/keyrings \
@@ -16,12 +15,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
+
+# UPGRADE PIP FIRST — FIXES VERSION CONFLICT
+RUN pip install --upgrade pip
+
+# THEN INSTALL YOUR REQUIREMENTS
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browser
 RUN python -m playwright install --with-deps chromium
 
-# Non-root user
 RUN useradd -m gpt-researcher \
     && mkdir -p /usr/src/app/outputs \
     && chown -R gpt-researcher:gpt-researcher /usr/src/app
@@ -30,4 +32,5 @@ USER gpt-researcher
 COPY --chown=gpt-researcher:gpt-researcher . .
 
 EXPOSE 8000
+
 CMD ["uvicorn", "backend.server.server:app", "--host", "0.0.0.0", "--port", "8000"]
