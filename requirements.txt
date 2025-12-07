@@ -28,12 +28,12 @@ PyMuPDF
 
 # GPT Researcher + LLM
 gpt-researcher==0.11.0
-langchain==0.0.318
+langchain==0.0.308
 langchain-core==0.1.17
-langchain-community==0.0.12
-langchain-openai==0.0.5
+langchain-community==0.0.16
+langchain-openai==0.0.7
 langgraph==0.0.18
-langsmith==0.1.21
+langsmith==0.0.45  <-- FIXED VERSION
 
-# Playwright / Browsers handled in Dockerfile
+# Browser support
 playwright
