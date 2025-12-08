@@ -1,53 +1,52 @@
-FROM python:3.11.4-slim-bullseye
+# Stage 1: Browser and build tools installation
+FROM python:3.11.4-slim-bullseye AS install-browser
 
-WORKDIR /usr/src/app
-
-# --- 1. Install System Dependencies & Google Chrome ---
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Standard dependencies
-    ca-certificates curl gnupg wget \
-    # Browser dependencies needed by Playwright/Chromium
-    libglib2.0-0 libnss3 libgdk-pixbuf2.0-0 libgtk-3-0 \
-    # Install Google Chrome
-    && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
-        | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] \
-        http://dl.google.com/linux/chrome/deb/ stable main" \
-        > /etc/apt/sources.list.d/google-chrome.list \
+# Install Chromium, Chromedriver, Firefox, Geckodriver, and build tools in one layer
+RUN apt-get update \
+    && apt-get install -y gnupg wget ca-certificates --no-install-recommends \
+    && wget -qO - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends google-chrome-stable \
-    # Cleanup
+    && apt-get install -y google-chrome-stable chromium-driver \
+    && google-chrome --version && chromedriver --version \
+    && apt-get install -y --no-install-recommends firefox-esr build-essential \
+    && wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
+    && tar -xvzf geckodriver-v0.33.0-linux64.tar.gz \
+    && chmod +x geckodriver \
+    && mv geckodriver /usr/local/bin/ \
+    && rm geckodriver-v0.33.0-linux64.tar.gz \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
+# Stage 2: Python dependencies installation
+FROM install-browser AS gpt-researcher-install
 
-# --- 2. Install Python Dependencies & Playwright Browsers ---
-# Consolidate installation commands and ensure pip is updated first.
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    # Install Playwright's specific browser binary into the default root path
-    python -m playwright install --with-deps chromium
+ENV PIP_ROOT_USER_ACTION=ignore
+WORKDIR /usr/src/app
 
-# --- 3. Setup Non-Root User, Permissions, and Environment Variable ---
-# The Playwright browser binary is installed in /root/.cache/ms-playwright/
-# The gpt-researcher user needs to know where to find it.
-RUN useradd -m gpt-researcher && \
-    mkdir -p /usr/src/app/outputs && \
+COPY ./requirements.txt ./requirements.txt
+# Include multi_agents requirements if that file is necessary for your final app
+COPY ./multi_agents/requirements.txt ./multi_agents/requirements.txt
+
+# Install all Python dependencies, including firecrawl-py, in a single layer
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r multi_agents/requirements.txt
+
+# Stage 3: Final stage with non-root user and app
+FROM gpt-researcher-install AS gpt-researcher
+
+# Create a non-root user for security and set permissions
+RUN useradd -ms /bin/bash gpt-researcher && \
     chown -R gpt-researcher:gpt-researcher /usr/src/app && \
+    mkdir -p /usr/src/app/outputs && \
+    chown -R gpt-researcher:gpt-researcher /usr/src/app/outputs && \
     chmod 777 /usr/src/app/outputs
 
-# Crucial: Set the PLAYWRIGHT_BROWSERS_PATH environment variable
-# to tell the gpt-researcher user where the browser binary is located.
-# Since the build ran as root, the default path is /root/.cache/ms-playwright.
-ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
-
 USER gpt-researcher
+WORKDIR /usr/src/app
 
-COPY --chown=gpt-researcher:gpt-researcher . .
+COPY --chown=gpt-researcher:gpt-researcher ./ ./
 
 EXPOSE 8000
 
-HEALTHCHECK CMD curl -f http://localhost:8000/health || exit 1
-
+# Define the default command to run the application
 CMD ["uvicorn", "backend.server.server:app", "--host", "0.0.0.0", "--port", "8000"]
