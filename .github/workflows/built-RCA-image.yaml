@@ -18,11 +18,11 @@ jobs:
 
       - name: Build & Push shina0505/partsgenie-rca:latest
         run: |
-          docker build -t shina0505/partsgenie-rca1:latest .
-          docker push shina0505/partsgenie-rca1:latest
+          docker build -t shina0505/partsgenie-rca2:latest .
+          docker push shina0505/partsgenie-rca2:latest
 
       - name: Success
         run: |
           echo "RCA BOT IMAGE READY!"
-          echo "Image: shina0505/partsgenie-rca1:latest"
+          echo "Image: shina0505/partsgenie-rca2:latest"
           echo "Use this image in Azure Portal now"
